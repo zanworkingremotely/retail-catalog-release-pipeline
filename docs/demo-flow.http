@@ -1,0 +1,21 @@
+@host = https://localhost:7140
+
+### Preview the latest approved merchandising catalog version
+GET {{host}}/api/catalog-releases/preview/latest
+
+### Schedule the approved version using the fingerprint from the preview response
+POST {{host}}/api/catalog-releases/schedule
+Content-Type: application/json
+
+{
+  "merchandisingVersionId": "SS26-DROP-02",
+  "scheduledFor": "2026-05-07T23:00:00Z",
+  "requestedBy": "catalog-admin@retail.com",
+  "previewFingerprint": "replace-with-preview-fingerprint"
+}
+
+### Inspect scheduled, published, blocked, or failed releases
+GET {{host}}/api/catalog-releases
+
+### Execute due releases manually
+POST {{host}}/api/catalog-releases/execute-due

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+    <ProjectReference Include="..\FastFashionCatalogSync.Application\FastFashionCatalogSync.Application.csproj" />
+    <ProjectReference Include="..\FastFashionCatalogSync.Domain\FastFashionCatalogSync.Domain.csproj" />
+    <ProjectReference Include="..\FastFashionCatalogSync.Scheduling\FastFashionCatalogSync.Scheduling.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

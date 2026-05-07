@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="FastFashionCatalogSync.Api/FastFashionCatalogSync.Api.csproj" />
+  <Project Path="FastFashionCatalogSync.Application/FastFashionCatalogSync.Application.csproj" />
+  <Project Path="FastFashionCatalogSync.Domain/FastFashionCatalogSync.Domain.csproj" />
+  <Project Path="FastFashionCatalogSync.Infrastructure/FastFashionCatalogSync.Infrastructure.csproj" />
+  <Project Path="FastFashionCatalogSync.Scheduling/FastFashionCatalogSync.Scheduling.csproj" />
+  <Project Path="FastFashionCatalogSync.Tests/FastFashionCatalogSync.Tests.csproj" />
+</Solution>

@@ -1,0 +1,33 @@
+using FastFashionCatalogSync.Application.Abstractions;
+using FastFashionCatalogSync.Domain.Catalog;
+
+namespace FastFashionCatalogSync.Infrastructure.Catalog;
+
+public sealed class OperationalCatalogGateway : IOperationalCatalogReader, IOperationalCatalogPublisher
+{
+    private readonly InMemoryRetailCatalogContext _databases;
+
+    public OperationalCatalogGateway(InMemoryRetailCatalogContext databases)
+    {
+        _databases = databases;
+    }
+
+    public Task<IReadOnlyCollection<OperationalCatalogItem>> GetOperationalItemsAsync(CancellationToken cancellationToken) =>
+        Task.FromResult<IReadOnlyCollection<OperationalCatalogItem>>(_databases.OperationalItems.ToList());
+
+    public Task<string> GetCurrentOperationalVersionIdAsync(CancellationToken cancellationToken)
+    {
+        var versionId = _databases.OperationalItems
+            .Select(item => item.PublishedVersionId)
+            .Distinct(StringComparer.Ordinal)
+            .SingleOrDefault() ?? "EMPTY";
+
+        return Task.FromResult(versionId);
+    }
+
+    public Task PublishVersionAsync(CatalogVersion version, CancellationToken cancellationToken)
+    {
+        _databases.PromoteToOperationalCatalog(version);
+        return Task.CompletedTask;
+    }
+}
