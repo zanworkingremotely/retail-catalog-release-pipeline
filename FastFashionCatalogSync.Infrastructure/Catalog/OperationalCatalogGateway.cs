@@ -5,9 +5,9 @@ namespace FastFashionCatalogSync.Infrastructure.Catalog;
 
 public sealed class OperationalCatalogGateway : IOperationalCatalogReader, IOperationalCatalogPublisher
 {
-    private readonly InMemoryRetailCatalogContext _databases;
+    private readonly LocalRetailCatalogContext _databases;
 
-    public OperationalCatalogGateway(InMemoryRetailCatalogContext databases)
+    public OperationalCatalogGateway(LocalRetailCatalogContext databases)
     {
         _databases = databases;
     }

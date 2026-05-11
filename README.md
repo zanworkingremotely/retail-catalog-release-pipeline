@@ -30,10 +30,35 @@ Administrators can preview the delta between the currently operational catalog a
 
 - `FastFashionCatalogSync.Domain`: catalog and release domain model
 - `FastFashionCatalogSync.Application`: preview, scheduling, and release orchestration use cases
-- `FastFashionCatalogSync.Infrastructure`: in-memory merchandising/operational database adapters and release ledger
+- `FastFashionCatalogSync.Infrastructure`: local adapters for merchandising, operational catalog, and release ledger boundaries
 - `FastFashionCatalogSync.Scheduling`: hosted worker that executes due releases
 - `FastFashionCatalogSync.Api`: workflow API
 - `FastFashionCatalogSync.Tests`: behavioral tests 
+- `docs/architecture.md`: logical architecture, data boundaries, and execution guard
+- `docs/adr`: architecture decision records
+
+## Local Infrastructure
+
+The repository includes Docker SQL Server setup for the target persistence shape:
+
+- `RetailMerchandisingDb`
+- `RetailOperationalCatalogDb`
+- `RetailReleaseControlDb`
+
+Start SQL Server locally:
+
+```powershell
+docker compose up -d
+```
+
+Create and seed the databases:
+
+```powershell
+docker exec -i retail-catalog-sql /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "RetailCatalog!2026" -C -i /dev/stdin < database/schema.sql
+docker exec -i retail-catalog-sql /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "RetailCatalog!2026" -C -i /dev/stdin < database/seed.sql
+```
+
+The application still uses local adapters in this checkpoint. The SQL Server boundary is present so the database ownership model is explicit before the adapters are replaced with SQL-backed implementations.
 
 ## API Workflow
 

@@ -83,11 +83,11 @@ public sealed class CatalogReleasePipelineTests
 
     private static TestServices CreateServices()
     {
-        var database = new InMemoryRetailCatalogContext();
+        var database = new LocalRetailCatalogContext();
         var clock = new TestClock { UtcNow = DateTimeOffset.Parse("2026-05-07T08:00:00Z") };
         var sourceReader = new MerchandisingCatalogReader(database);
         var liveGateway = new OperationalCatalogGateway(database);
-        var releaseLedger = new InMemoryCatalogReleaseLedger(database);
+        var releaseLedger = new LocalCatalogReleaseLedger(database);
         var previewBuilder = new CatalogReleasePreviewBuilder(sourceReader, liveGateway);
         var releaseService = new CatalogReleaseOrchestrator(previewBuilder, sourceReader, liveGateway, releaseLedger, clock);
 
@@ -95,11 +95,11 @@ public sealed class CatalogReleasePipelineTests
     }
 
     private sealed record TestServices(
-        InMemoryRetailCatalogContext Database,
+        LocalRetailCatalogContext Database,
         TestClock Clock,
         MerchandisingCatalogReader SourceReader,
         OperationalCatalogGateway LiveGateway,
-        InMemoryCatalogReleaseLedger ReleaseStore,
+        LocalCatalogReleaseLedger ReleaseStore,
         CatalogReleasePreviewBuilder DiffService,
         CatalogReleaseOrchestrator ReleaseService);
 

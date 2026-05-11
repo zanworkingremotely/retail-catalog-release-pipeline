@@ -4,11 +4,11 @@ using FastFashionCatalogSync.Infrastructure.Catalog;
 
 namespace FastFashionCatalogSync.Infrastructure.Releases;
 
-public sealed class InMemoryCatalogReleaseLedger : ICatalogReleaseLedger
+public sealed class LocalCatalogReleaseLedger : ICatalogReleaseLedger
 {
-    private readonly InMemoryRetailCatalogContext _databases;
+    private readonly LocalRetailCatalogContext _databases;
 
-    public InMemoryCatalogReleaseLedger(InMemoryRetailCatalogContext databases)
+    public LocalCatalogReleaseLedger(LocalRetailCatalogContext databases)
     {
         _databases = databases;
     }

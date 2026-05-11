@@ -3,9 +3,9 @@ using FastFashionCatalogSync.Domain.Releases;
 
 namespace FastFashionCatalogSync.Infrastructure.Catalog;
 
-public sealed class InMemoryRetailCatalogContext
+public sealed class LocalRetailCatalogContext
 {
-    public InMemoryRetailCatalogContext()
+    public LocalRetailCatalogContext()
     {
         MerchandisingVersions =
         [

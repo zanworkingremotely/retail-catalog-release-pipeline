@@ -5,9 +5,9 @@ namespace FastFashionCatalogSync.Infrastructure.Catalog;
 
 public sealed class MerchandisingCatalogReader : IMerchandisingCatalogReader
 {
-    private readonly InMemoryRetailCatalogContext _databases;
+    private readonly LocalRetailCatalogContext _databases;
 
-    public MerchandisingCatalogReader(InMemoryRetailCatalogContext databases)
+    public MerchandisingCatalogReader(LocalRetailCatalogContext databases)
     {
         _databases = databases;
     }
