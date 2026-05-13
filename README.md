@@ -22,6 +22,7 @@ Administrators can preview the delta between the currently operational catalog a
 - Time-gated execution so releases publish only when due
 - Idempotent release handling so a published release is not executed twice
 - Execution guard that blocks rollout if the approved change set has drifted since preview
+- SQL-backed release ledger for durable scheduling and audit state
 - Separate merchandising and operational catalog abstractions to model cross-database synchronization
 - Background worker for scheduled release sweeps
 - API endpoints for preview, scheduling, audit listing, and manual execution
@@ -30,7 +31,7 @@ Administrators can preview the delta between the currently operational catalog a
 
 - `FastFashionCatalogSync.Domain`: catalog and release domain model
 - `FastFashionCatalogSync.Application`: preview, scheduling, and release orchestration use cases
-- `FastFashionCatalogSync.Infrastructure`: local adapters for merchandising, operational catalog, and release ledger boundaries
+- `FastFashionCatalogSync.Infrastructure`: local catalog adapters and SQL Server release-control persistence
 - `FastFashionCatalogSync.Scheduling`: hosted worker that executes due releases
 - `FastFashionCatalogSync.Api`: workflow API
 - `FastFashionCatalogSync.Tests`: behavioral tests 
@@ -58,7 +59,7 @@ docker exec -i retail-catalog-sql /opt/mssql-tools18/bin/sqlcmd -S localhost -U 
 docker exec -i retail-catalog-sql /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "RetailCatalog!2026" -C -i /dev/stdin < database/seed.sql
 ```
 
-The application still uses local adapters in this checkpoint. The SQL Server boundary is present so the database ownership model is explicit before the adapters are replaced with SQL-backed implementations.
+When `ConnectionStrings:ReleaseControl` is configured, the API uses `RetailReleaseControlDb` for scheduled release decisions and audit state. The merchandising and operational catalog adapters remain local in this checkpoint so the release-control boundary can be introduced without changing every persistence concern at once.
 
 ## API Workflow
 
