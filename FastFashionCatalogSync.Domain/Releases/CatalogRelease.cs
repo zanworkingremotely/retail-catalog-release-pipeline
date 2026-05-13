@@ -29,6 +29,25 @@ public sealed class CatalogRelease
     public DateTimeOffset? ExecutedAt { get; private set; }
     public string? ExecutionMessage { get; private set; }
 
+    public static CatalogRelease Restore(
+        Guid id,
+        string merchandisingVersionId,
+        string previewFingerprint,
+        DateTimeOffset scheduledFor,
+        string requestedBy,
+        DateTimeOffset requestedAt,
+        CatalogReleaseStatus status,
+        DateTimeOffset? executedAt,
+        string? executionMessage)
+    {
+        return new CatalogRelease(id, merchandisingVersionId, previewFingerprint, scheduledFor, requestedBy, requestedAt)
+        {
+            Status = status,
+            ExecutedAt = executedAt,
+            ExecutionMessage = executionMessage
+        };
+    }
+
     public bool IsDue(DateTimeOffset now) =>
         Status == CatalogReleaseStatus.Scheduled && ScheduledFor <= now;
 

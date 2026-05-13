@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddCatalogReleaseApplication();
-builder.Services.AddCatalogReleaseInfrastructure();
+builder.Services.AddCatalogReleaseInfrastructure(builder.Configuration);
 builder.Services.AddCatalogReleaseScheduling();
 
 var app = builder.Build();

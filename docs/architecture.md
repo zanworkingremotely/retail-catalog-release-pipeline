@@ -42,7 +42,7 @@ flowchart LR
 
 `RetailOperationalCatalogDb` owns the catalog currently visible to stores and ecommerce channels. This database should change only through controlled release execution.
 
-`RetailReleaseControlDb` owns scheduled release decisions, preview fingerprints, execution timestamps, status, and failure messages.
+`RetailReleaseControlDb` owns scheduled release decisions, preview fingerprints, execution timestamps, status, and failure messages. The application uses a SQL-backed release ledger for this boundary when the `ReleaseControl` connection string is configured.
 
 ## Execution Guard
 
@@ -50,6 +50,10 @@ The preview fingerprint protects against drift between approval and execution. I
 
 ## Current Implementation Stage
 
-The application contracts already model the target boundaries. The current adapters are local implementations so the business workflow, release lifecycle, and tests can be developed before introducing SQL-backed adapters.
+The application contracts already model the target boundaries. The release-control boundary now has a SQL Server implementation. The merchandising and operational catalog adapters remain local so the business workflow can evolve in focused increments.
 
-The repository includes Docker SQL Server, schema scripts, and seed data for the next implementation step.
+The repository includes Docker SQL Server, schema scripts, and seed data for local development.
+
+## Production Considerations
+
+The current scheduler is intended for a single active worker process. A multi-instance deployment should add a database-backed claim or lease step before publishing due releases, so two workers cannot execute the same scheduled release concurrently.

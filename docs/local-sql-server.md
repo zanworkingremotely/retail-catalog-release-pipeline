@@ -33,4 +33,6 @@ Server=localhost,14333;Database=RetailOperationalCatalogDb;User Id=sa;Password=R
 Server=localhost,14333;Database=RetailReleaseControlDb;User Id=sa;Password=RetailCatalog!2026;TrustServerCertificate=True
 ```
 
-The application still uses local adapters in this checkpoint. The SQL Server boundary is intentionally introduced first so the schema, data ownership, and deployment shape are clear before replacing the adapters.
+When `ConnectionStrings:ReleaseControl` is configured, the API persists scheduled releases to `RetailReleaseControlDb`.
+
+The merchandising and operational catalog adapters are still local in this checkpoint. That keeps the implementation incremental: release-control durability is introduced first because scheduled decisions and audit state must survive process restarts.
