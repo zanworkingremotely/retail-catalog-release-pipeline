@@ -54,6 +54,8 @@ The application contracts already model the target boundaries. The release-contr
 
 The repository includes Docker SQL Server, schema scripts, and seed data for local development.
 
-## Production Considerations
+## Worker Concurrency
 
-The current scheduler is intended for a single active worker process. A multi-instance deployment should add a database-backed claim or lease step before publishing due releases, so two workers cannot execute the same scheduled release concurrently.
+Due releases are claimed by the release ledger before catalog data is published. The SQL Server ledger atomically moves eligible rows from `Scheduled` to `Publishing` with update locks and `READPAST`, so multiple worker instances can sweep for due releases without publishing the same scheduled release twice.
+
+A production deployment should still add stale-claim recovery for releases that remain in `Publishing` after a worker crash.
