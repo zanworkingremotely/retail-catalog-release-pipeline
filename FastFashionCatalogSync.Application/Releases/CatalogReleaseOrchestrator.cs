@@ -64,7 +64,7 @@ public sealed class CatalogReleaseOrchestrator
     public async Task<CatalogReleaseSweepResult> ExecuteDueAsync(CancellationToken cancellationToken)
     {
         var now = _clock.UtcNow;
-        var due = await _releaseLedger.ListDueAsync(now, cancellationToken);
+        var due = await _releaseLedger.ClaimDueAsync(now, cancellationToken);
         var published = 0;
         var blocked = 0;
         var failed = 0;
@@ -73,7 +73,6 @@ public sealed class CatalogReleaseOrchestrator
         {
             try
             {
-                release.MarkPublishing();
                 var preview = await _previewBuilder.PreviewVersionAsync(release.MerchandisingVersionId, cancellationToken);
                 if (!StringComparer.Ordinal.Equals(preview.Fingerprint, release.PreviewFingerprint))
                 {

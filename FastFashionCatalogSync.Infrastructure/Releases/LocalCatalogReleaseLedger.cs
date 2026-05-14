@@ -22,12 +22,17 @@ public sealed class LocalCatalogReleaseLedger : ICatalogReleaseLedger
     public Task<IReadOnlyCollection<CatalogRelease>> ListAsync(CancellationToken cancellationToken) =>
         Task.FromResult<IReadOnlyCollection<CatalogRelease>>(_databases.Releases.OrderBy(release => release.ScheduledFor).ToList());
 
-    public Task<IReadOnlyCollection<CatalogRelease>> ListDueAsync(DateTimeOffset now, CancellationToken cancellationToken)
+    public Task<IReadOnlyCollection<CatalogRelease>> ClaimDueAsync(DateTimeOffset now, CancellationToken cancellationToken)
     {
         var releases = _databases.Releases
             .Where(release => release.IsDue(now))
             .OrderBy(release => release.ScheduledFor)
             .ToList();
+
+        foreach (var release in releases)
+        {
+            release.MarkPublishing();
+        }
 
         return Task.FromResult<IReadOnlyCollection<CatalogRelease>>(releases);
     }

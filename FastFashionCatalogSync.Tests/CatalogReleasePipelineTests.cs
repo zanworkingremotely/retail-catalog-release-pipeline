@@ -81,6 +81,31 @@ public sealed class CatalogReleasePipelineTests
         Assert.Equal(CatalogReleaseStatus.Blocked, release.Status);
     }
 
+    [Fact]
+    public async Task Due_release_claim_is_not_returned_to_another_worker()
+    {
+        var services = CreateServices();
+        var preview = await services.DiffService.PreviewLatestApprovedAsync(CancellationToken.None);
+        var scheduledFor = services.Clock.UtcNow.AddMinutes(15);
+
+        await services.ReleaseService.ScheduleAsync(
+            new ScheduleCatalogReleaseRequest(
+                preview.MerchandisingVersionId,
+                scheduledFor,
+                "catalog-admin@retail.com",
+                preview.Fingerprint),
+            CancellationToken.None);
+
+        services.Clock.UtcNow = scheduledFor.AddSeconds(1);
+
+        var firstClaim = await services.ReleaseStore.ClaimDueAsync(services.Clock.UtcNow, CancellationToken.None);
+        var secondClaim = await services.ReleaseStore.ClaimDueAsync(services.Clock.UtcNow, CancellationToken.None);
+
+        var release = Assert.Single(firstClaim);
+        Assert.Equal(CatalogReleaseStatus.Publishing, release.Status);
+        Assert.Empty(secondClaim);
+    }
+
     private static TestServices CreateServices()
     {
         var database = new LocalRetailCatalogContext();

@@ -76,23 +76,30 @@ public sealed class SqlCatalogReleaseLedger : ICatalogReleaseLedger
         return await ReadReleasesAsync(sql, now: null, cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<CatalogRelease>> ListDueAsync(DateTimeOffset now, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<CatalogRelease>> ClaimDueAsync(DateTimeOffset now, CancellationToken cancellationToken)
     {
         const string sql = """
-            SELECT
-                Id,
-                MerchandisingVersionId,
-                PreviewFingerprint,
-                ScheduledFor,
-                RequestedBy,
-                RequestedAt,
-                Status,
-                ExecutedAt,
-                ExecutionMessage
-            FROM dbo.CatalogReleases
-            WHERE Status = 'Scheduled'
-              AND ScheduledFor <= @Now
-            ORDER BY ScheduledFor;
+            ;WITH DueReleases AS
+            (
+                SELECT Id
+                FROM dbo.CatalogReleases WITH (UPDLOCK, READPAST, ROWLOCK)
+                WHERE Status = 'Scheduled'
+                  AND ScheduledFor <= @Now
+            )
+            UPDATE releases
+            SET Status = 'Publishing'
+            OUTPUT
+                inserted.Id,
+                inserted.MerchandisingVersionId,
+                inserted.PreviewFingerprint,
+                inserted.ScheduledFor,
+                inserted.RequestedBy,
+                inserted.RequestedAt,
+                inserted.Status,
+                inserted.ExecutedAt,
+                inserted.ExecutionMessage
+            FROM dbo.CatalogReleases releases
+            INNER JOIN DueReleases due ON releases.Id = due.Id;
             """;
 
         return await ReadReleasesAsync(sql, now, cancellationToken);
