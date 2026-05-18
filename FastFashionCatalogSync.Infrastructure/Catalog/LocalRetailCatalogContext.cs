@@ -1,5 +1,6 @@
 using FastFashionCatalogSync.Domain.Catalog;
-using FastFashionCatalogSync.Domain.Releases;
+using FastFashionCatalogSync.Domain.Merchandising;
+using FastFashionCatalogSync.Domain.Rollouts;
 
 namespace FastFashionCatalogSync.Infrastructure.Catalog;
 
@@ -9,23 +10,23 @@ public sealed class LocalRetailCatalogContext
     {
         MerchandisingVersions =
         [
-            new CatalogVersion(
+            new MerchandisingVersion(
                 "SS26-DROP-01",
                 "Summer Streetwear Drop 01",
                 DateTimeOffset.Parse("2026-05-01T08:00:00Z"),
                 [
-                    new CatalogItemSnapshot("TEE-OVR-001", "Oversized Logo Tee", "Tops", 24.99m, "ZA", true),
-                    new CatalogItemSnapshot("DEN-WID-220", "Wide Leg Denim", "Denim", 49.99m, "ZA", true),
-                    new CatalogItemSnapshot("DRS-LIN-144", "Linen Blend Dress", "Dresses", 39.99m, "ZA", true)
+                    new MerchandisingItemSnapshot("TEE-OVR-001", "Oversized Logo Tee", "Tops", 24.99m, "ZA", true),
+                    new MerchandisingItemSnapshot("DEN-WID-220", "Wide Leg Denim", "Denim", 49.99m, "ZA", true),
+                    new MerchandisingItemSnapshot("DRS-LIN-144", "Linen Blend Dress", "Dresses", 39.99m, "ZA", true)
                 ]),
-            new CatalogVersion(
+            new MerchandisingVersion(
                 "SS26-DROP-02",
                 "Summer Streetwear Drop 02",
                 DateTimeOffset.Parse("2026-05-05T08:00:00Z"),
                 [
-                    new CatalogItemSnapshot("TEE-OVR-001", "Oversized Logo Tee", "Tops", 22.99m, "ZA", true),
-                    new CatalogItemSnapshot("DEN-WID-220", "Wide Leg Denim", "Premium Denim", 54.99m, "ZA", true),
-                    new CatalogItemSnapshot("JKT-BMB-089", "Cropped Bomber Jacket", "Outerwear", 69.99m, "ZA", true)
+                    new MerchandisingItemSnapshot("TEE-OVR-001", "Oversized Logo Tee", "Tops", 22.99m, "ZA", true),
+                    new MerchandisingItemSnapshot("DEN-WID-220", "Wide Leg Denim", "Premium Denim", 54.99m, "ZA", true),
+                    new MerchandisingItemSnapshot("JKT-BMB-089", "Cropped Bomber Jacket", "Outerwear", 69.99m, "ZA", true)
                 ])
         ];
 
@@ -37,11 +38,11 @@ public sealed class LocalRetailCatalogContext
         ];
     }
 
-    public List<CatalogVersion> MerchandisingVersions { get; }
+    public List<MerchandisingVersion> MerchandisingVersions { get; }
     public List<OperationalCatalogItem> OperationalItems { get; private set; }
-    public List<CatalogRelease> Releases { get; } = [];
+    public List<ProductRollout> Rollouts { get; } = [];
 
-    public void PromoteToOperationalCatalog(CatalogVersion version)
+    public void PromoteToOperationalCatalog(MerchandisingVersion version)
     {
         OperationalItems = version.Items
             .Select(item => new OperationalCatalogItem(

@@ -1,5 +1,6 @@
 using FastFashionCatalogSync.Application.Abstractions;
 using FastFashionCatalogSync.Domain.Catalog;
+using FastFashionCatalogSync.Domain.Merchandising;
 
 namespace FastFashionCatalogSync.Infrastructure.Catalog;
 
@@ -25,7 +26,7 @@ public sealed class OperationalCatalogGateway : IOperationalCatalogReader, IOper
         return Task.FromResult(versionId);
     }
 
-    public Task PublishVersionAsync(CatalogVersion version, CancellationToken cancellationToken)
+    public Task PublishVersionAsync(MerchandisingVersion version, CancellationToken cancellationToken)
     {
         _databases.PromoteToOperationalCatalog(version);
         return Task.CompletedTask;

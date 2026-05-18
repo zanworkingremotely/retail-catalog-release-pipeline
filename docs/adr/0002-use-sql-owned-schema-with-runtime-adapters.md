@@ -6,15 +6,15 @@ Accepted
 
 ## Context
 
-The release pipeline needs durable audit and scheduling state. The database schema should be managed as a deployable database asset rather than being implicitly owned by application startup.
+The rollout pipeline needs durable audit and scheduling state. The database schema should be managed as a deployable database asset rather than being implicitly owned by application startup.
 
-Entity Framework migrations are useful in many application teams, but enterprise SQL Server estates often prefer DACPAC-style deployment, reviewed SQL scripts, or database projects so schema changes can move through controlled release pipelines.
+Entity Framework migrations are useful in many application teams, but enterprise SQL Server estates often prefer DACPAC-style deployment, reviewed SQL scripts, or database projects so schema changes can move through controlled rollout pipelines.
 
 ## Decision
 
 Use SQL scripts in this repository to define the database shape and keep runtime persistence behind application ports.
 
-`ICatalogReleaseLedger` is the application port for release-control persistence. The SQL Server implementation uses explicit SQL through `Microsoft.Data.SqlClient` and maps to the `RetailReleaseControlDb` schema.
+`IProductRolloutLedger` is the application port for rollout-control persistence. The SQL Server implementation uses explicit SQL through `Microsoft.Data.SqlClient` and maps to the `RetailRolloutControlDb` schema.
 
 The application does not create or migrate tables at startup.
 

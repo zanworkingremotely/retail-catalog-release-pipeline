@@ -2,28 +2,29 @@ using System.Security.Cryptography;
 using System.Text;
 using FastFashionCatalogSync.Application.Abstractions;
 using FastFashionCatalogSync.Domain.Catalog;
-using FastFashionCatalogSync.Domain.Releases;
+using FastFashionCatalogSync.Domain.Merchandising;
+using FastFashionCatalogSync.Domain.Rollouts;
 
-namespace FastFashionCatalogSync.Application.Releases;
+namespace FastFashionCatalogSync.Application.Rollouts;
 
-public sealed class CatalogReleasePreviewBuilder
+public sealed class ProductRolloutPreviewBuilder
 {
     private readonly IMerchandisingCatalogReader _merchandisingCatalog;
     private readonly IOperationalCatalogReader _operationalCatalog;
 
-    public CatalogReleasePreviewBuilder(IMerchandisingCatalogReader merchandisingCatalog, IOperationalCatalogReader operationalCatalog)
+    public ProductRolloutPreviewBuilder(IMerchandisingCatalogReader merchandisingCatalog, IOperationalCatalogReader operationalCatalog)
     {
         _merchandisingCatalog = merchandisingCatalog;
         _operationalCatalog = operationalCatalog;
     }
 
-    public async Task<CatalogReleasePreview> PreviewLatestApprovedAsync(CancellationToken cancellationToken)
+    public async Task<ProductRolloutPreview> PreviewLatestApprovedAsync(CancellationToken cancellationToken)
     {
         var version = await _merchandisingCatalog.GetLatestApprovedVersionAsync(cancellationToken);
         return await PreviewVersionAsync(version.VersionId, cancellationToken);
     }
 
-    public async Task<CatalogReleasePreview> PreviewVersionAsync(string merchandisingVersionId, CancellationToken cancellationToken)
+    public async Task<ProductRolloutPreview> PreviewVersionAsync(string merchandisingVersionId, CancellationToken cancellationToken)
     {
         var merchandisingVersion = await _merchandisingCatalog.GetApprovedVersionAsync(merchandisingVersionId, cancellationToken);
         var operationalItems = await _operationalCatalog.GetOperationalItemsAsync(cancellationToken);
@@ -31,36 +32,36 @@ public sealed class CatalogReleasePreviewBuilder
         var changes = BuildChanges(merchandisingVersion.Items, operationalItems);
         var fingerprint = BuildFingerprint(merchandisingVersion.VersionId, operationalVersion, changes);
 
-        return new CatalogReleasePreview(merchandisingVersion.VersionId, operationalVersion, fingerprint, changes);
+        return new ProductRolloutPreview(merchandisingVersion.VersionId, operationalVersion, fingerprint, changes);
     }
 
-    private static IReadOnlyCollection<CatalogChange> BuildChanges(
-        IReadOnlyCollection<CatalogItemSnapshot> merchandisingItems,
+    private static IReadOnlyCollection<ProductChange> BuildChanges(
+        IReadOnlyCollection<MerchandisingItemSnapshot> merchandisingItems,
         IReadOnlyCollection<OperationalCatalogItem> operationalItems)
     {
         var merchandisingByKey = merchandisingItems.ToDictionary(item => Key(item.Sku, item.Region));
         var operationalByKey = operationalItems.ToDictionary(item => Key(item.Sku, item.Region));
-        var changes = new List<CatalogChange>();
+        var changes = new List<ProductChange>();
 
         foreach (var merchandisingItem in merchandisingItems.OrderBy(item => item.Sku).ThenBy(item => item.Region))
         {
             if (!operationalByKey.TryGetValue(Key(merchandisingItem.Sku, merchandisingItem.Region), out var operationalItem))
             {
-                changes.Add(new CatalogChange(CatalogChangeType.Added, merchandisingItem.Sku, merchandisingItem.Region, "item", null, merchandisingItem.Name));
+                changes.Add(new ProductChange(ProductChangeType.Added, merchandisingItem.Sku, merchandisingItem.Region, "item", null, merchandisingItem.Name));
                 continue;
             }
 
-            AddIfChanged(changes, CatalogChangeType.DetailsChanged, merchandisingItem.Sku, merchandisingItem.Region, "name", operationalItem.Name, merchandisingItem.Name);
-            AddIfChanged(changes, CatalogChangeType.CategoryChanged, merchandisingItem.Sku, merchandisingItem.Region, "category", operationalItem.Category, merchandisingItem.Category);
-            AddIfChanged(changes, CatalogChangeType.PriceChanged, merchandisingItem.Sku, merchandisingItem.Region, "price", operationalItem.Price.ToString("0.00"), merchandisingItem.Price.ToString("0.00"));
-            AddIfChanged(changes, CatalogChangeType.AvailabilityChanged, merchandisingItem.Sku, merchandisingItem.Region, "availability", operationalItem.IsAvailable.ToString(), merchandisingItem.IsAvailable.ToString());
+            AddIfChanged(changes, ProductChangeType.DetailsChanged, merchandisingItem.Sku, merchandisingItem.Region, "name", operationalItem.Name, merchandisingItem.Name);
+            AddIfChanged(changes, ProductChangeType.CategoryChanged, merchandisingItem.Sku, merchandisingItem.Region, "category", operationalItem.Category, merchandisingItem.Category);
+            AddIfChanged(changes, ProductChangeType.PriceChanged, merchandisingItem.Sku, merchandisingItem.Region, "price", operationalItem.Price.ToString("0.00"), merchandisingItem.Price.ToString("0.00"));
+            AddIfChanged(changes, ProductChangeType.AvailabilityChanged, merchandisingItem.Sku, merchandisingItem.Region, "availability", operationalItem.IsAvailable.ToString(), merchandisingItem.IsAvailable.ToString());
         }
 
         foreach (var operationalItem in operationalItems.OrderBy(item => item.Sku).ThenBy(item => item.Region))
         {
             if (!merchandisingByKey.ContainsKey(Key(operationalItem.Sku, operationalItem.Region)))
             {
-                changes.Add(new CatalogChange(CatalogChangeType.Removed, operationalItem.Sku, operationalItem.Region, "item", operationalItem.Name, null));
+                changes.Add(new ProductChange(ProductChangeType.Removed, operationalItem.Sku, operationalItem.Region, "item", operationalItem.Name, null));
             }
         }
 
@@ -68,8 +69,8 @@ public sealed class CatalogReleasePreviewBuilder
     }
 
     private static void AddIfChanged(
-        ICollection<CatalogChange> changes,
-        CatalogChangeType type,
+        ICollection<ProductChange> changes,
+        ProductChangeType type,
         string sku,
         string region,
         string field,
@@ -78,11 +79,11 @@ public sealed class CatalogReleasePreviewBuilder
     {
         if (!StringComparer.Ordinal.Equals(currentValue, proposedValue))
         {
-            changes.Add(new CatalogChange(type, sku, region, field, currentValue, proposedValue));
+            changes.Add(new ProductChange(type, sku, region, field, currentValue, proposedValue));
         }
     }
 
-    private static string BuildFingerprint(string merchandisingVersionId, string operationalVersionId, IEnumerable<CatalogChange> changes)
+    private static string BuildFingerprint(string merchandisingVersionId, string operationalVersionId, IEnumerable<ProductChange> changes)
     {
         var canonical = new StringBuilder()
             .Append(merchandisingVersionId)

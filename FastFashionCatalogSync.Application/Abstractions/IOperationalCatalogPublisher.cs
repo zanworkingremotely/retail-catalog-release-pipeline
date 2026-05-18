@@ -1,8 +1,8 @@
-using FastFashionCatalogSync.Domain.Catalog;
+using FastFashionCatalogSync.Domain.Merchandising;
 
 namespace FastFashionCatalogSync.Application.Abstractions;
 
 public interface IOperationalCatalogPublisher
 {
-    Task PublishVersionAsync(CatalogVersion version, CancellationToken cancellationToken);
+    Task PublishVersionAsync(MerchandisingVersion version, CancellationToken cancellationToken);
 }

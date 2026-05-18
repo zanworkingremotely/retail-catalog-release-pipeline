@@ -1,7 +1,7 @@
 using FastFashionCatalogSync.Application.Abstractions;
 using FastFashionCatalogSync.Infrastructure.Catalog;
 using FastFashionCatalogSync.Infrastructure.Clocks;
-using FastFashionCatalogSync.Infrastructure.Releases;
+using FastFashionCatalogSync.Infrastructure.Rollouts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,13 +9,13 @@ namespace FastFashionCatalogSync.Infrastructure.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCatalogReleaseInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddProductRolloutInfrastructure(this IServiceCollection services)
     {
-        services.AddLocalCatalogReleaseInfrastructure();
+        services.AddLocalProductRolloutInfrastructure();
         return services;
     }
 
-    public static IServiceCollection AddCatalogReleaseInfrastructure(
+    public static IServiceCollection AddProductRolloutInfrastructure(
         this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -26,20 +26,20 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IOperationalCatalogReader>(provider => provider.GetRequiredService<OperationalCatalogGateway>());
         services.AddSingleton<IOperationalCatalogPublisher>(provider => provider.GetRequiredService<OperationalCatalogGateway>());
 
-        var releaseControlConnectionString = configuration.GetConnectionString("ReleaseControl");
-        if (string.IsNullOrWhiteSpace(releaseControlConnectionString))
+        var rolloutControlConnectionString = configuration.GetConnectionString("RolloutControl");
+        if (string.IsNullOrWhiteSpace(rolloutControlConnectionString))
         {
-            services.AddSingleton<ICatalogReleaseLedger, LocalCatalogReleaseLedger>();
+            services.AddSingleton<IProductRolloutLedger, LocalProductRolloutLedger>();
         }
         else
         {
-            services.AddSingleton<ICatalogReleaseLedger>(_ => new SqlCatalogReleaseLedger(releaseControlConnectionString));
+            services.AddSingleton<IProductRolloutLedger>(_ => new SqlProductRolloutLedger(rolloutControlConnectionString));
         }
 
         return services;
     }
 
-    private static IServiceCollection AddLocalCatalogReleaseInfrastructure(this IServiceCollection services)
+    private static IServiceCollection AddLocalProductRolloutInfrastructure(this IServiceCollection services)
     {
         services.AddSingleton<LocalRetailCatalogContext>();
         services.AddSingleton<IClock, SystemClock>();
@@ -47,7 +47,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<OperationalCatalogGateway>();
         services.AddSingleton<IOperationalCatalogReader>(provider => provider.GetRequiredService<OperationalCatalogGateway>());
         services.AddSingleton<IOperationalCatalogPublisher>(provider => provider.GetRequiredService<OperationalCatalogGateway>());
-        services.AddSingleton<ICatalogReleaseLedger, LocalCatalogReleaseLedger>();
+        services.AddSingleton<IProductRolloutLedger, LocalProductRolloutLedger>();
 
         return services;
     }

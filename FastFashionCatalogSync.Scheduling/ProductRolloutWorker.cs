@@ -1,17 +1,17 @@
-using FastFashionCatalogSync.Application.Releases;
+using FastFashionCatalogSync.Application.Rollouts;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace FastFashionCatalogSync.Scheduling;
 
-public sealed class CatalogReleaseWorker : BackgroundService
+public sealed class ProductRolloutWorker : BackgroundService
 {
-    private readonly CatalogReleaseOrchestrator _releaseService;
-    private readonly ILogger<CatalogReleaseWorker> _logger;
+    private readonly ProductRolloutWorkflow _rolloutWorkflow;
+    private readonly ILogger<ProductRolloutWorker> _logger;
 
-    public CatalogReleaseWorker(CatalogReleaseOrchestrator releaseService, ILogger<CatalogReleaseWorker> logger)
+    public ProductRolloutWorker(ProductRolloutWorkflow rolloutWorkflow, ILogger<ProductRolloutWorker> logger)
     {
-        _releaseService = releaseService;
+        _rolloutWorkflow = rolloutWorkflow;
         _logger = logger;
     }
 
@@ -21,11 +21,11 @@ public sealed class CatalogReleaseWorker : BackgroundService
 
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {
-            var result = await _releaseService.ExecuteDueAsync(stoppingToken);
+            var result = await _rolloutWorkflow.ExecuteDueAsync(stoppingToken);
             if (result.Evaluated > 0)
             {
                 _logger.LogInformation(
-                    "Catalog release sweep evaluated {Evaluated} releases. Published: {Published}, blocked: {Blocked}, failed: {Failed}.",
+                    "Product rollout sweep evaluated {Evaluated} rollouts. Published: {Published}, blocked: {Blocked}, failed: {Failed}.",
                     result.Evaluated,
                     result.Published,
                     result.Blocked,

@@ -1,6 +1,6 @@
-namespace FastFashionCatalogSync.Application.Releases;
+namespace FastFashionCatalogSync.Application.Rollouts;
 
-public sealed record ScheduleCatalogReleaseRequest(
+public sealed record ScheduleProductRolloutRequest(
     string MerchandisingVersionId,
     DateTimeOffset ScheduledFor,
     string RequestedBy,

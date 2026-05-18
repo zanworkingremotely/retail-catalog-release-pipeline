@@ -1,24 +1,24 @@
 @FastFashionCatalogSync.Api_HostAddress = http://localhost:5240
 
-### Preview the latest approved merchandising catalog
-GET {{FastFashionCatalogSync.Api_HostAddress}}/api/catalog-releases/preview/latest
+### Preview the latest approved merchandising version
+GET {{FastFashionCatalogSync.Api_HostAddress}}/api/product-rollouts/preview/latest
 Accept: application/json
 
-### Schedule a catalog release after copying the fingerprint from the preview response
-POST {{FastFashionCatalogSync.Api_HostAddress}}/api/catalog-releases/schedule
+### Schedule a product rollout after copying the fingerprint from the preview response
+POST {{FastFashionCatalogSync.Api_HostAddress}}/api/product-rollouts/schedule
 Content-Type: application/json
 
 {
   "merchandisingVersionId": "SS26-DROP-02",
   "scheduledFor": "2026-05-07T23:00:00Z",
-  "requestedBy": "catalog-admin@retail.com",
+  "requestedBy": "merchandising-admin@retail.com",
   "previewFingerprint": "replace-with-preview-fingerprint"
 }
 
-### Inspect release ledger
-GET {{FastFashionCatalogSync.Api_HostAddress}}/api/catalog-releases
+### Inspect rollout ledger
+GET {{FastFashionCatalogSync.Api_HostAddress}}/api/product-rollouts
 Accept: application/json
 
-### Execute due catalog releases
-POST {{FastFashionCatalogSync.Api_HostAddress}}/api/catalog-releases/execute-due
+### Execute due product rollouts
+POST {{FastFashionCatalogSync.Api_HostAddress}}/api/product-rollouts/execute-due
 Accept: application/json

@@ -1,10 +1,10 @@
-namespace FastFashionCatalogSync.Domain.Releases;
+namespace FastFashionCatalogSync.Domain.Rollouts;
 
-public sealed record CatalogReleasePreview(
+public sealed record ProductRolloutPreview(
     string MerchandisingVersionId,
     string CurrentOperationalVersionId,
     string Fingerprint,
-    IReadOnlyCollection<CatalogChange> Changes)
+    IReadOnlyCollection<ProductChange> Changes)
 {
     public bool HasChanges => Changes.Count > 0;
 }

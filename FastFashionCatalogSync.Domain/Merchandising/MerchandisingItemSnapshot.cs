@@ -1,6 +1,6 @@
-namespace FastFashionCatalogSync.Domain.Catalog;
+namespace FastFashionCatalogSync.Domain.Merchandising;
 
-public sealed record CatalogItemSnapshot(
+public sealed record MerchandisingItemSnapshot(
     string Sku,
     string Name,
     string Category,

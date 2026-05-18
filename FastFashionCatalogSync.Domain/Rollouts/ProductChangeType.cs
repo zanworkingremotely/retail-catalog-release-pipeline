@@ -1,6 +1,6 @@
-namespace FastFashionCatalogSync.Domain.Releases;
+namespace FastFashionCatalogSync.Domain.Rollouts;
 
-public enum CatalogChangeType
+public enum ProductChangeType
 {
     Added,
     Removed,

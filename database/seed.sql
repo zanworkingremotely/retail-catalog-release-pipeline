@@ -1,14 +1,14 @@
 USE RetailMerchandisingDb;
 GO
 
-IF NOT EXISTS (SELECT 1 FROM dbo.CatalogVersions WHERE VersionId = N'SS26-DROP-01')
+IF NOT EXISTS (SELECT 1 FROM dbo.MerchandisingVersions WHERE VersionId = N'SS26-DROP-01')
 BEGIN
-    INSERT INTO dbo.CatalogVersions (VersionId, Label, ApprovedAt)
+    INSERT INTO dbo.MerchandisingVersions (VersionId, Label, ApprovedAt)
     VALUES
         (N'SS26-DROP-01', N'Summer Streetwear Drop 01', '2026-05-01T08:00:00+00:00'),
         (N'SS26-DROP-02', N'Summer Streetwear Drop 02', '2026-05-05T08:00:00+00:00');
 
-    INSERT INTO dbo.CatalogVersionItems (VersionId, Sku, Region, Name, Category, Price, IsAvailable)
+    INSERT INTO dbo.MerchandisingVersionItems (VersionId, Sku, Region, Name, Category, Price, IsAvailable)
     VALUES
         (N'SS26-DROP-01', N'TEE-OVR-001', N'ZA', N'Oversized Logo Tee', N'Tops', 24.99, 1),
         (N'SS26-DROP-01', N'DEN-WID-220', N'ZA', N'Wide Leg Denim', N'Denim', 49.99, 1),

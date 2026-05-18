@@ -4,9 +4,9 @@ namespace FastFashionCatalogSync.Scheduling.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCatalogReleaseScheduling(this IServiceCollection services)
+    public static IServiceCollection AddProductRolloutScheduling(this IServiceCollection services)
     {
-        services.AddHostedService<CatalogReleaseWorker>();
+        services.AddHostedService<ProductRolloutWorker>();
         return services;
     }
 }

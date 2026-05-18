@@ -1,14 +1,14 @@
-using FastFashionCatalogSync.Application.Releases;
+using FastFashionCatalogSync.Application.Rollouts;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FastFashionCatalogSync.Application.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddCatalogReleaseApplication(this IServiceCollection services)
+    public static IServiceCollection AddProductRolloutApplication(this IServiceCollection services)
     {
-        services.AddScoped<CatalogReleasePreviewBuilder>();
-        services.AddScoped<CatalogReleaseOrchestrator>();
+        services.AddScoped<ProductRolloutPreviewBuilder>();
+        services.AddScoped<ProductRolloutWorkflow>();
 
         return services;
     }
